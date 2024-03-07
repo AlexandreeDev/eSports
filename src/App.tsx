@@ -1,13 +1,15 @@
-import "./styles/main.css";
 import { useState, useEffect } from "react";
 
 import * as Dialog from "@radix-ui/react-dialog";
 import axios from "axios";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 import logoImg from "./assets/logo-nlw-esports.svg";
 import { CreateAdBanner } from "./components/CreateAdBanner";
 import { CreateAdModal } from "./components/Form/CreateAdModal";
 import { GameBanner } from "./components/GameBanner";
+import "./styles/main.css";
 
 interface Game {
   id: string;
@@ -20,12 +22,20 @@ interface Game {
 
 function App() {
   const [games, setGames] = useState<Game[]>([]);
+  const [sliderRef] = useKeenSlider({
+    slideChanged() {},
+    slides: {
+      perView: 4,
+      spacing: 16,
+    },
+  });
 
   useEffect(() => {
     axios("http://localhost:3000/games").then((response) => {
       setGames(response.data);
     });
   }, []);
+
   return (
     <div className="max-w-[1344px] mx-auto flex flex-col items-center my-20">
       <img src={logoImg} alt="Esports" />
@@ -36,17 +46,16 @@ function App() {
         </span>{" "}
         está aqui.
       </h1>
-      <div className="grid grid-cols-6 gap-6 mt-16">
-        {games.map((game) => {
-          return (
+      <div ref={sliderRef} className="keen-slider">
+        {games.map((game) => (
+          <div key={game.id} className="keen-slider__slide">
             <GameBanner
-              key={game.id}
               bannerUrl={game.bannerUrl}
               title={game.title}
               adsCount={game._count.ads}
             />
-          );
-        })}
+          </div>
+        ))}
       </div>
       <Dialog.Root>
         <CreateAdBanner />
