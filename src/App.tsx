@@ -25,7 +25,7 @@ function App() {
   const [sliderRef] = useKeenSlider({
     slideChanged() {},
     slides: {
-      perView: 4,
+      perView: 5,
       spacing: 16,
     },
   });
